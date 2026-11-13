@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#12343b"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>سیستم معلوماتی قریه‌ها – افغان‌اید</title>
+<style>
+:root{--ink:#12343b;--teal:#1f6f78;--teal2:#d9ebec;--bg:#eef2f3;--card:#fff;--line:#cfd9dc;--ochre:#b8860b;--red:#b3261e;--ok:#2e7d4f;--txt:#1c2a2e}
+@media (prefers-color-scheme:dark){:root{--ink:#e6f1f2;--teal:#5cb8c1;--teal2:#1d3a3f;--bg:#0f1b1e;--card:#172629;--line:#2c4247;--ochre:#e0b341;--red:#ff8a80;--ok:#7bd69c;--txt:#e3eced}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Noto Naskh Arabic","Vazirmatn",Tahoma,sans-serif;font-size:16px;line-height:1.7}
+header{background:var(--ink);color:var(--bg);padding:10px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media (prefers-color-scheme:dark){header{background:#0a1416;color:#e3eced}}
+header h1{font-size:18px;margin:0;flex:1;min-width:200px}
+header select{font-family:inherit;padding:4px 8px;border-radius:6px;border:0}
+nav{display:flex;overflow-x:auto;background:var(--card);border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{flex:1;min-width:max-content;border:0;background:none;padding:12px 14px;font:inherit;color:var(--txt);cursor:pointer;border-bottom:4px solid transparent}
+nav button.on{border-bottom-color:var(--ochre);font-weight:700;color:var(--teal)}
+main{max-width:1100px;margin:0 auto;padding:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.bar>*{font:inherit}
+input,select,textarea{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--txt);width:100%}
+.bar input,.bar select{width:auto;flex:1;min-width:140px}
+button.b{font:inherit;padding:9px 16px;border-radius:8px;border:1px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer}
+button.b.o{background:none;color:var(--teal)}
+button.b.d{background:var(--red);border-color:var(--red);color:#fff}
+@media (prefers-color-scheme:dark){button.b{color:#0f1b1e}button.b.d{color:#0f1b1e}}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--ochre);outline-offset:1px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.muted{color:#6b7f84;font-size:14px}
+.tag{display:inline-block;padding:1px 10px;border-radius:99px;background:var(--teal2);color:var(--teal);font-size:13px}
+.tag.ok{background:#d5efdf;color:#1c6b3d}.tag.warn{background:#fbebc4;color:#7a5a00}.tag.no{background:#f6d4d1;color:#8c1c15}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:26px;color:var(--teal);line-height:1.2}
+.bars div.l{display:flex;gap:8px;align-items:center;margin:6px 0}
+.bars .t{flex:1;background:var(--teal2);border-radius:6px;height:16px;overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;overflow:auto;padding:10px}
+.md{background:var(--card);max-width:640px;margin:0 auto;border-radius:12px;padding:16px}
+.md label{display:block;margin:10px 0 3px;font-weight:700;font-size:15px}
+.th{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.th div{position:relative}
+.th img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer}
+.th .pdf{width:72px;height:72px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;font-size:13px}
+.th button{position:absolute;top:-6px;left:-6px;border:0;background:var(--red);color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer}
+.vl{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.vl .card{cursor:pointer;margin:0}
+#print{display:none}
+@media print{body>*:not(#print){display:none!important}#print{display:block;color:#000;background:#fff;padding:10px}#print table{border-collapse:collapse;width:100%}#print td,#print th{border:1px solid #000;padding:4px}#print img{max-width:220px;margin:4px}}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;z-index:50}
+</style>
+</head>
+<body>
+<header>
+  <h1>سیستم معلوماتی قریه‌ها – افغان‌اید<br><span class="muted" style="color:inherit;opacity:.75;font-size:13px">ولسوالی فیض‌آباد، ولایت جوزجان</span></h1>
+  <select id="role" aria-label="کاربر"></select>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div id="print"></div>
+
+<script>
+const VILLAGES=["شیشه‌خانه ترکمنیه","شیشه‌خانه عربیه","شیخ‌آباد گرجک","کوکلداش وطنی","گرجک","سه درخت","چهل‌کپه","چغزار","خلمی ۱","خلمی ۲"];
+const VISITS=["نشست با متنفذین","معرفی برنامه","نقشه منابع","مرور نقشه منابع و انتخاب نمایندگان","تاریخچه حوادث طبیعی","نقشه خطرات حوادث طبیعی","جنتری موسمی","مرور جنتری موسمی","پلان انکشافی","تحلیل معیشت","فورم اول تیم نظارت اشتراکی","مرور تحلیل معیشت","آشنایی با سیستم پرداخت دیجیتلی"];
+const POSTERS=["نقشه منابع قریه","نقشه تاریخچه حوادث طبیعی","نقشه ساحات خطر و حوادث طبیعی","جنتری موسمی","پلان انکشافی","تحلیل معیشت"];
+const REPTYPES=["فوکل پاینت کلیدی","فوکل پاینت مردانه","فوکل پاینت زنانه","عضو نماینده مردانه","عضو نماینده زنانه","کمیته نظارت اشتراکی و رسیدگی به شکایات","کمیته حفظ و مراقبت و حوادث طبیعی","کمیته آسیب‌پذیر و رفاه قریه"];
+const ECON=["غنی","متوسط","فقیر","فقیرتر"];
+const VSTAT=["تکمیل‌شده","در جریان","تکمیل‌نشده"];
+// سطح دسترسی: ویرایش در کدام بخش‌ها
+const ROLES={"مدیر سیستم":{edit:["fam","rep","vis","arc"],del:true},"مشاهده‌گر":{edit:[]}};
+const TABS=[["fam","خانواده‌ها"],["rep","نمایندگان و کمیته‌ها"],["vis","بازدیدها"],["arc","آرشیف پوستر و نقشه"],["dash","گزارش‌ها"]];
+
+let db={fam:[],rep:[],vis:[],arc:[],seq:0};
+let role="مدیر سیستم",tab="dash",flt={fam:{v:"",q:"",e:""},rep:{v:"",t:""},vis:{v:""},arc:{v:"",t:""},dash:{v:""}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const can=s=>ROLES[role].edit.includes(s);
+/* ربط نماینده/عضو با خانواده: اول با شماره تذکره، در غیر آن با نام + ولد + قریه */
+const norm=s=>String(s||"").replace(/\s+/g," ").trim();
+const same=(r,x)=>(norm(r.idNo)&&norm(r.idNo)===norm(x.idNo))||(r.village===x.village&&norm(r.name)&&norm(r.name)===norm(x.name)&&norm(r.father)===norm(x.father));
+const rolesOf=x=>db.rep.filter(r=>same(r,x)).map(r=>r.type);
+const famOf=r=>db.fam.find(x=>same(r,x));
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+/* ذخیره‌سازی در IndexedDB (روی همین دستگاه) */
+const COLS=["fam","rep","vis","arc"];
+let pend=[];
+const touch=(c,r)=>{pend.push({c,r})};
+let lastId=0;const newId=()=>{let i=Date.now()*1000+Math.floor(Math.random()*1000);if(i<=lastId)i=lastId+1;lastId=i;return i};
+const untouch=(c,id)=>{pend.push({c,id})};
+const viewOnly=()=>role==="مشاهده‌گر";
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open("afghanaid_vis",2);
+ r.onupgradeneeded=e=>{const d=r.result,tx=r.transaction;COLS.forEach(c=>{if(!d.objectStoreNames.contains(c))d.createObjectStore(c,{keyPath:"id"})});if(!d.objectStoreNames.contains("kv"))d.createObjectStore("kv");
+  if(e.oldVersion===1){tx.objectStore("kv").get("db").onsuccess=ev=>{const o=ev.target.result;if(o){COLS.forEach(c=>(o[c]||[]).forEach(x=>tx.objectStore(c).put(x)));tx.objectStore("kv").put(o.seq||0,"seq")}}}};
+ r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const getAll=(d,c)=>new Promise(res=>{const q=d.transaction(c).objectStore(c).getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])});
+async function load(){try{const d=await idb();const n={seq:0};for(const c of COLS)n[c]=await getAll(d,c);const sq=await new Promise(r=>{const q=d.transaction("kv").objectStore("kv").get("seq");q.onsuccess=()=>r(q.result||0);q.onerror=()=>r(0)});n.seq=Math.max(sq,...COLS.flatMap(c=>n[c].map(x=>x.id)),0);db=n}catch(e){}}
+async function save(){if(viewOnly())return;const p=pend;pend=[];try{const d=await idb();const tx=d.transaction([...COLS,"kv"],"readwrite");p.forEach(o=>{o.r?tx.objectStore(o.c).put(o.r):tx.objectStore(o.c).delete(o.id)});tx.objectStore("kv").put(db.seq,"seq");await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)})}catch(e){toast("ذخیره نشد: حافظه مرورگر پر یا در دسترس نیست")}}
+async function mergeBackup(d){for(const c of COLS){const m=new Map(db[c].map(x=>[x.id,x]));(d[c]||[]).forEach(x=>{m.set(x.id,x);touch(c,x)});db[c]=[...m.values()]}db.seq=Math.max(db.seq,d.seq||0,...COLS.flatMap(c=>db[c].map(x=>x.id)));await save()}
+
+/* عکس: کوچک‌سازی تا حافظه پر نشود؛ PDF بدون تغییر */
+function readFile(f,small){return new Promise(res=>{
+  if(f.type==="application/pdf"){const r=new FileReader();r.onload=()=>res({n:f.name,t:"pdf",d:r.result});r.readAsDataURL(f);return}
+  const img=new Image(),u=URL.createObjectURL(f);
+  img.onload=()=>{const m=small?800:1100,s=Math.min(1,m/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=img.width*s;c.height=img.height*s;c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res({n:f.name,t:"img",d:c.toDataURL("image/jpeg",small?.5:.7)})};
+  img.onerror=()=>res(null);img.src=u})}
+
+/* فورم عمومی */
+function form(title,fields,vals,onSave){
+  const tmp=JSON.parse(JSON.stringify(vals||{}));
+  const ov=document.createElement("div");ov.className="ov";
+  const thumbs=k=>(tmp[k]||[]).map((f,i)=>`<div>${f.t==="pdf"?`<div class="pdf">PDF</div>`:`<img src="${f.d}" onclick="showImg(this.src)">`}<button type="button" data-k="${k}" data-i="${i}" aria-label="حذف">×</button></div>`).join("");
+  ov.innerHTML=`<div class="md"><h2 style="margin-top:0">${esc(title)}</h2>`+fields.map(f=>{
+    let h=`<label for="f_${f.k}">${f.l}${f.req?" *":""}</label>`;
+    const v=tmp[f.k]??f.def??"";
+    if(f.t==="pick")h+=`<select id="f_${f.k}"><option value="">— انتخاب از خانواده‌های ثبت‌شده (اختیاری) —</option>${db.fam.map(q=>`<option value="${q.id}">${esc(q.name)}${q.father?" ولد "+esc(q.father):""} – ${q.village}</option>`).join("")}</select>`;
+    else if(f.t==="select")h+=`<select id="f_${f.k}"><option value="">— انتخاب —</option>${f.o.map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
+    else if(f.t==="area")h+=`<textarea id="f_${f.k}" rows="3">${esc(v)}</textarea>`;
+    else if(f.t==="photos"){h+=`<input type="file" id="f_${f.k}" accept="${f.pdf?"image/*,application/pdf":"image/*"}" ${f.one?"":"multiple"}><div class="th" id="th_${f.k}">${thumbs(f.k)}</div>`}
+    else if(f.t==="ro")h+=`<input id="f_${f.k}" value="${esc(v)}" readonly>`;
+    else h+=`<input id="f_${f.k}" type="${f.t||"text"}" ${f.t==="number"?'min="0" inputmode="numeric"':""} value="${esc(v)}">`;
+    return h}).join("")+`<div class="row" style="margin-top:16px"><button class="b" id="sv">ذخیره</button><button class="b o" id="cn">لغو</button></div></div>`;
+  document.body.appendChild(ov);
+  fields.filter(f=>f.t==="photos").forEach(f=>{
+    ov.querySelector("#f_"+f.k).onchange=async e=>{tmp[f.k]=f.one?[]:(tmp[f.k]||[]);for(const file of e.target.files){const r=await readFile(file,f.k==="idPhoto");if(r)tmp[f.k].push(r)}ov.querySelector("#th_"+f.k).innerHTML=thumbs(f.k);e.target.value=""}});
+  fields.filter(f=>f.t==="pick").forEach(f=>{ov.querySelector("#f_"+f.k).onchange=e=>{const x=db.fam.find(q=>q.id===+e.target.value);if(!x)return;["village","name","father","mahala","phone","idNo"].forEach(k=>{const el=ov.querySelector("#f_"+k);if(el)el.value=x[k]||""});tmp.idPhoto=JSON.parse(JSON.stringify(x.idPhoto||[]));const th=ov.querySelector("#th_idPhoto");if(th)th.innerHTML=thumbs("idPhoto")}});
+  ov.onclick=e=>{const b=e.target.closest("button[data-k]");if(b){tmp[b.dataset.k].splice(+b.dataset.i,1);ov.querySelector("#th_"+b.dataset.k).innerHTML=thumbs(b.dataset.k)}};
+  ov.querySelector("#cn").onclick=()=>ov.remove();
+  ov.querySelector("#sv").onclick=async()=>{
+    for(const f of fields){if(f.t==="photos"||f.t==="pick")continue;tmp[f.k]=ov.querySelector("#f_"+f.k).value.trim();if(f.t==="number")tmp[f.k]=tmp[f.k]===""?0:+tmp[f.k];if(f.req&&(tmp[f.k]===""))return toast("«"+f.l+"» ضروری است")}
+    const err=onSave(tmp);if(err)return toast(err);await save();ov.remove();render()}}
+function showImg(s){const o=document.createElement("div");o.className="ov";o.innerHTML=`<img src="${s}" style="max-width:100%;display:block;margin:auto;border-radius:8px">`;o.onclick=()=>o.remove();document.body.appendChild(o)}
+function openFile(i,k){const f=db[k.split(".")[0]][+k.split(".")[1]].files?.[i];}
+function dl(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click()}
+function csv(name,rows){dl(name,new Blob(["\ufeff"+rows.map(r=>r.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(",")).join("\n")],{type:"text/csv"}))}
+function printHTML(h){$("#print").innerHTML=h;window.print()}
+const vsel=(k,all=true)=>`<select data-f="${k}" data-g="v">${all?'<option value="">همه قریه‌ها</option>':""}${VILLAGES.map(v=>`<option ${flt[k].v===v?"selected":""}>${v}</option>`).join("")}</select>`;
+function del(k,id){if(!ROLES[role].del)return toast("فقط مدیر سیستم می‌تواند حذف کند");if(!confirm("حذف دائمی شود؟"))return;db[k]=db[k].filter(x=>x.id!==id);untouch(k,id);save();render()}
+
+/* ۱. خانواده‌ها */
+const famFields=()=>[{k:"village",l:"نام قریه",t:"select",o:VILLAGES,req:1},{k:"formNo",l:"شماره فورم"},{k:"name",l:"اسم",req:1},{k:"father",l:"ولد (نام پدر)"},{k:"mahala",l:"نام محله"},{k:"phone",l:"شماره تماس",t:"tel"},{k:"idNo",l:"شماره تذکره"},{k:"idPhoto",l:"عکس تذکره",t:"photos",one:1},{k:"econ",l:"وضعیت اقتصادی",t:"select",o:ECON,req:1},{k:"males",l:"تعداد ذکور خانواده",t:"number"},{k:"females",l:"تعداد اناث خانواده",t:"number"},{k:"head",l:"سرپرست خانواده",t:"select",o:["مرد","زن"],req:1},{k:"vuln",l:"نوع آسیب‌پذیری (در صورت نیاز)",t:"select",o:["معلول","سالمند","بیوه","یتیم","دیگر"]},{k:"review",l:"وضعیت بررسی",t:"select",o:["بررسی نشده","تأیید","مغایرت","بررسی مجدد"],def:"بررسی نشده"}];
+function editFam(id){const x=db.fam.find(f=>f.id===id)||{};form(id?"ویرایش خانواده":"ثبت خانواده جدید",famFields(),x,t=>{
+  if(t.idNo&&db.fam.some(f=>f.idNo===t.idNo&&f.id!==id))return"این شماره تذکره قبلاً ثبت شده است";
+  let r=x;if(id)Object.assign(x,t,{upd:today()});else{r={...t,id:newId(),created:today(),upd:today()};db.fam.push(r)}touch("fam",r)})}
+function regFam(rid){const r=db.rep.find(q=>q.id===rid);if(!r)return;
+  const pre={village:r.village,name:r.name,father:r.father,mahala:r.mahala,phone:r.phone,idNo:r.idNo,idPhoto:r.idPhoto||[],review:"بررسی نشده"};
+  form("ثبت در خانواده‌ها: "+r.name,famFields(),pre,t=>{
+    if(t.idNo&&db.fam.some(f=>f.idNo===t.idNo))return"این شماره تذکره قبلاً در خانواده‌ها ثبت شده است";
+    const n={...t,id:newId(),created:today(),upd:today()};db.fam.push(n);touch("fam",n)})}
+function viewFam(){const f=flt.fam;let l=db.fam.filter(x=>(!f.v||x.village===f.v)&&(!f.e||x.econ===f.e)&&(!f.q||[x.name,x.father,x.idNo,x.formNo,x.phone].join(" ").includes(f.q)));
+  return`<div class="bar">${vsel("fam")}<select data-f="fam" data-g="e"><option value="">همه وضعیت‌ها</option>${ECON.map(e=>`<option ${f.e===e?"selected":""}>${e}</option>`).join("")}</select><input data-f="fam" data-g="q" placeholder="جستجو: نام، تذکره، شماره فورم" value="${esc(f.q)}">${can("fam")?`<button class="b" onclick="editFam()">+ ثبت خانواده</button>`:""}<button class="b o" onclick="exportFam()">خروجی Excel</button></div><p class="muted">${l.length} خانواده</p>`+(l.slice(0,f.lim||50).map(x=>`<div class="card"><div class="row"><b>${esc(x.name)} ${x.father?"ولد "+esc(x.father):""}</b><span><span class="tag">${x.econ}</span> <span class="tag ${x.review==="تأیید"?"ok":x.review==="مغایرت"?"no":"warn"}">${x.review||""}</span></span></div><div class="muted">${x.village} ${x.mahala?"• محله "+esc(x.mahala):""} • فورم: ${esc(x.formNo||"-")} • تذکره: ${esc(x.idNo||"-")} • ${esc(x.phone||"")}<br>سرپرست: ${x.head} • ذکور: ${x.males||0} • اناث: ${x.females||0} • ${x.vuln||""}</div>${rolesOf(x).length?`<div style="margin-top:4px"><b>وظیفه:</b> ${rolesOf(x).map(r=>`<span class="tag ok">${r}</span>`).join(" ")}</div>`:""}${x.idPhoto?.[0]?`<div class="th"><img src="${x.idPhoto[0].d}" onclick="showImg(this.src)"></div>`:""}<div class="row" style="margin-top:6px"><button class="b o" onclick="copyFam(${x.id})">کاپی</button>${can("fam")?`<button class="b o" onclick="editFam(${x.id})">ویرایش</button>`:"<span></span>"}${ROLES[role].del?`<button class="b d" onclick="del('fam',${x.id})">حذف</button>`:""}</div></div>`).join("")||`<div class="card muted">هنوز خانواده‌ای ثبت نشده است. با «ثبت خانواده» شروع کنید.</div>`)+(l.length>(f.lim||50)?`<button class="b" onclick="flt.fam.lim=(flt.fam.lim||50)+50;render()">نمایش بیشتر (${l.length-(f.lim||50)} باقی)</button>`:"")}
+function copyText(s){const done=()=>toast("کاپی شد");const fb=()=>{const a=document.createElement("textarea");a.value=s;document.body.appendChild(a);a.select();try{document.execCommand("copy");done()}catch{toast("کاپی نشد")}a.remove()};if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(s).then(done,fb);else fb()}
+function copyFam(id){const x=db.fam.find(q=>q.id===id);if(!x)return;copyText(["اسم: "+x.name,"ولد: "+(x.father||""),"قریه: "+x.village,"محله: "+(x.mahala||""),"تماس: "+(x.phone||""),"تذکره: "+(x.idNo||""),"فورم: "+(x.formNo||""),"وضعیت: "+x.econ,"سرپرست: "+x.head,"ذکور: "+(x.males||0),"اناث: "+(x.females||0),"وظیفه: "+rolesOf(x).join(" / ")].join("\n"))}
+function copyRep(id){const x=db.rep.find(q=>q.id===id);if(!x)return;copyText(["بخش: "+x.type,"اسم: "+x.name,"ولد: "+(x.father||""),"قریه: "+x.village,"محله: "+(x.mahala||""),"تماس: "+(x.phone||""),"تذکره: "+(x.idNo||"")].join("\n"))}
+function exportFam(){csv("families.csv",[["شماره","قریه","شماره فورم","اسم","ولد","محله","تماس","تذکره","وضعیت","ذکور","اناث","سرپرست","آسیب‌پذیری","بررسی","تاریخ ثبت","وظیفه"],...db.fam.map((x,i)=>[i+1,x.village,x.formNo,x.name,x.father,x.mahala,x.phone,x.idNo,x.econ,x.males,x.females,x.head,x.vuln,x.review,x.created,rolesOf(x).join(" / ")])])}
+
+/* ۲. نمایندگان */
+function editRep(id){const x=db.rep.find(f=>f.id===id)||{};form(id?"ویرایش":"ثبت نماینده / عضو",[{k:"type",l:"بخش (وظیفه)",t:"select",o:REPTYPES,req:1},...(id?[]:[{k:"pick",l:"قبلاً در خانواده‌ها ثبت است؟ انتخاب کنید",t:"pick"}]),{k:"village",l:"نام قریه",t:"select",o:VILLAGES,req:1},{k:"name",l:"اسم",req:1},{k:"father",l:"ولد"},{k:"mahala",l:"نام محله"},{k:"phone",l:"شماره تماس",t:"tel"},{k:"idNo",l:"شماره تذکره"},{k:"idPhoto",l:"عکس تذکره (در صورت نیاز)",t:"photos",one:1}],x,t=>{
+  if(db.rep.some(r=>r.id!==id&&r.type===t.type&&same(r,t)))return"این شخص قبلاً در همین بخش ثبت شده است";
+  let r=x;if(id)Object.assign(x,t);else{r={...t,id:newId(),created:today()};db.rep.push(r)}touch("rep",r);
+  if(!famOf(t))setTimeout(()=>toast("این شخص در بخش خانواده‌ها ثبت نیست"),2500);else setTimeout(()=>toast("وظیفه در بخش خانواده‌ها هم ثبت شد"),2500)})}
+function viewRep(){const f=flt.rep;return`<div class="bar">${vsel("rep")}<select data-f="rep" data-g="t"><option value="">همه بخش‌ها</option>${REPTYPES.map(e=>`<option ${f.t===e?"selected":""}>${e}</option>`).join("")}</select>${can("rep")?`<button class="b" onclick="editRep()">+ افزودن عضو</button>`:""}<button class="b o" onclick="exportRep()">خروجی Excel</button></div>`+[...REPTYPES,...(db.rep.some(x=>x.type==="عضو نماینده")?["عضو نماینده"]:[])].filter(t=>!f.t||t===f.t).map(t=>{const l=db.rep.filter(x=>x.type===t&&(!f.v||x.village===f.v));return`<div class="card"><div class="row"><b>${t}</b><span class="tag">${l.length} نفر</span></div>`+l.map(x=>`<div class="row" style="border-top:1px solid var(--line);padding:6px 0"><span>${esc(x.name)} ${x.father?"ولد "+esc(x.father):""}<br><span class="muted">${x.village} • ${esc(x.mahala||"")} • ${esc(x.phone||"")}</span><br>${famOf(x)?`<span class="tag ok">در خانواده‌ها ثبت است – ${famOf(x).econ}</span>`:`<span class="tag warn">در خانواده‌ها ثبت نیست</span> ${can("fam")?`<button class="b o" style="padding:2px 10px" onclick="regFam(${x.id})">ثبت در خانواده‌ها</button>`:""}`}</span><span><button class="b o" onclick="copyRep(${x.id})">کاپی</button> ${can("rep")?`<button class="b o" onclick="editRep(${x.id})">ویرایش</button> `:""}${ROLES[role].del?`<button class="b d" onclick="del('rep',${x.id})">حذف</button>`:""}</span></div>`).join("")+`</div>`}).join("")}
+function exportRep(){csv("representatives.csv",[["بخش","قریه","اسم","ولد","محله","تماس"],...db.rep.map(x=>[x.type,x.village,x.name,x.father,x.mahala,x.phone])])}
+
+/* ۳. بازدیدها */
+const getV=(v,n)=>db.vis.find(x=>x.village===v&&x.no===n);
+function editVis(v,n){let x=getV(v,n);form(`${v} – بازدید ${n}: ${VISITS[n-1]}`,[{k:"date",l:"تاریخ بازدید",t:"date",def:today(),req:1},{k:"status",l:"وضعیت بازدید",t:"select",o:VSTAT,def:"در جریان"},{k:"report",l:"متن گزارش بازدید",t:"area"},{k:"acts",l:"فعالیت‌های انجام‌شده",t:"area"},{k:"probs",l:"مشکلات و چالش‌ها",t:"area"},{k:"sugg",l:"پیشنهادات",t:"area"},{k:"photos",l:"عکس‌های بازدید",t:"photos"}],x||{},t=>{let r=x;if(x)Object.assign(x,t,{upd:today()});else{r={...t,id:newId(),village:v,no:n,upd:today()};db.vis.push(r)}touch("vis",r)})}
+function viewVis(){const v=flt.vis.v||VILLAGES[0];flt.vis.v=v;
+  return`<div class="bar">${vsel("vis",false)}<button class="b o" onclick="printVillageVisits('${v}')">PDF همه بازدیدهای قریه</button></div><div class="vl">`+VISITS.map((t,i)=>{const x=getV(v,i+1);const c=x?.status==="تکمیل‌شده"?"ok":x?.status==="در جریان"?"warn":"no";return`<div class="card" onclick="${can("vis")?`editVis('${v}',${i+1})`:`seeVis('${v}',${i+1})`}"><div class="row"><b>${i+1}. ${t}</b></div><span class="tag ${x?c:""}">${x?x.status:"ثبت نشده"}</span><div class="muted">${x?x.date+" • "+(x.photos?.length||0)+" عکس":""}</div></div>`}).join("")+`</div><p class="muted">برای دیدن گزارش یا ثبت، روی بازدید بزنید.${can("vis")?"":" (فقط مشاهده)"}</p>`}
+function visHTML(v,n){const x=getV(v,n);if(!x)return"";return`<h3>${v} – بازدید ${n}: ${VISITS[n-1]}</h3><p>تاریخ: ${x.date} • وضعیت: ${x.status}</p><p><b>گزارش:</b> ${esc(x.report)}</p><p><b>فعالیت‌ها:</b> ${esc(x.acts)}</p><p><b>مشکلات:</b> ${esc(x.probs)}</p><p><b>پیشنهادات:</b> ${esc(x.sugg)}</p>${(x.photos||[]).filter(p=>p.t==="img").map(p=>`<img src="${p.d}">`).join("")}`}
+function seeVis(v,n){if(!getV(v,n))return toast("هنوز ثبت نشده");const o=document.createElement("div");o.className="ov";o.innerHTML=`<div class="md">${visHTML(v,n)}<div class="row"><button class="b o" id="pp">چاپ / PDF</button><button class="b" id="cc">بستن</button></div></div>`;document.body.appendChild(o);o.querySelector("#cc").onclick=()=>o.remove();o.querySelector("#pp").onclick=()=>printHTML(visHTML(v,n))}
+function printVillageVisits(v){printHTML(`<h2>گزارش بازدیدهای قریه ${v}</h2>`+VISITS.map((_,i)=>visHTML(v,i+1)).join("<hr>"))}
+
+/* ۵. آرشیف */
+function editArc(id){const x=db.arc.find(f=>f.id===id)||{};form(id?"ویرایش":"افزودن پوستر / نقشه",[{k:"village",l:"نام قریه",t:"select",o:VILLAGES,req:1},{k:"type",l:"نوع",t:"select",o:POSTERS,req:1},{k:"date",l:"تاریخ آپلود",t:"date",def:today()},{k:"note",l:"توضیحات",t:"area"},{k:"files",l:"عکس یا فایل PDF",t:"photos",pdf:1}],x,t=>{let r=x;if(id)Object.assign(x,t);else{r={...t,id:newId()};db.arc.push(r)}touch("arc",r)})}
+function viewArc(){const f=flt.arc;const v=f.v||VILLAGES[0];f.v=v;
+  return`<div class="bar">${vsel("arc",false)}${can("arc")?`<button class="b" onclick="editArc()">+ افزودن</button>`:""}</div>`+POSTERS.map(t=>{const l=db.arc.filter(x=>x.village===v&&x.type===t);return`<div class="card"><div class="row"><b>${t}</b><span class="tag">${l.reduce((a,x)=>a+(x.files?.length||0),0)} فایل</span></div>`+l.map(x=>`<div style="border-top:1px solid var(--line);padding:6px 0"><span class="muted">${x.date||""} ${esc(x.note||"")}</span><div class="th">${(x.files||[]).map(p=>p.t==="pdf"?`<a class="pdf" href="${p.d}" download="${esc(p.n)}" style="display:flex;width:72px;height:72px;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px">PDF</a>`:`<img src="${p.d}" onclick="showImg(this.src)">`).join("")}</div>${can("arc")?`<button class="b o" onclick="editArc(${x.id})">ویرایش</button> `:""}${ROLES[role].del?`<button class="b d" onclick="del('arc',${x.id})">حذف</button>`:""}</div>`).join("")+`</div>`}).join("")}
+
+/* ۴. گزارش‌ها */
+function stats(v){const F=db.fam.filter(x=>!v||x.village===v),R=db.rep.filter(x=>!v||x.village===v),V=db.vis.filter(x=>!v||x.village===v);const n=F.length||1;const c=e=>F.filter(x=>x.econ===e).length;
+  const vc=V.filter(x=>x.status==="تکمیل‌شده").length,tot=v?13:130;
+  return{F,R,V,c,n,male:F.reduce((a,x)=>a+(+x.males||0),0),fem:F.reduce((a,x)=>a+(+x.females||0),0),hw:F.filter(x=>x.head==="زن").length,hm:F.filter(x=>x.head==="مرد").length,vc,tot,ph:V.reduce((a,x)=>a+(x.photos?.length||0),0),last:V.map(x=>x.date).sort().pop()||"-"}}
+function viewDash(){const v=flt.dash.v,s=stats(v);const card=(t,n)=>`<div class="stat"><b>${n}</b>${t}</div>`;
+  return`<div class="bar">${vsel("dash")}<button class="b o" onclick="printDash()">چاپ / PDF</button><button class="b o" onclick="exportAll()">Excel همه قریه‌ها</button></div><h2 style="margin:0 0 8px">${v||"مجموع هر ۱۰ قریه"}</h2>
+  <div class="stats">${card("مجموع خانواده‌ها",s.F.length)}${card("مجموع افراد",s.male+s.fem)}${card("مجموع ذکور",s.male)}${card("مجموع اناث",s.fem)}${card("سرپرست زن",s.hw)}${card("سرپرست مرد",s.hm)}${card("نمایندگان و اعضای کمیته",s.R.length)}</div>
+  <div class="card bars"><b>وضعیت اقتصادی</b>${ECON.map(e=>`<div class="l"><span style="width:60px">${e}</span><div class="t"><i style="width:${s.c(e)/s.n*100}%"></i></div><span style="width:90px">${s.c(e)} (${Math.round(s.c(e)/s.n*100)}٪)</span></div>`).join("")}</div>
+  <div class="card"><b>بازدیدها</b><div class="stats" style="margin-top:8px">${card("بازدید تکمیل‌شده",s.vc+" از "+s.tot)}${card("باقی‌مانده",s.tot-s.vc)}${card("عکس‌های بازدید",s.ph)}${card("آخرین بازدید",s.last)}</div></div>
+  <div class="card"><b>تعداد نمایندگان و کمیته‌ها</b>${REPTYPES.map(t=>`<div class="row"><span>${t}</span><span class="tag">${s.R.filter(x=>x.type===t).length}</span></div>`).join("")}</div>`+(v?"":`<div class="card"><b>مقایسه قریه‌ها</b><table style="width:100%;border-collapse:collapse;font-size:14px"><tr><th>قریه</th><th>خانواده</th><th>غنی</th><th>متوسط</th><th>فقیر</th><th>فقیرتر</th><th>بازدید</th></tr>${VILLAGES.map(x=>{const q=stats(x);return`<tr style="border-top:1px solid var(--line);text-align:center"><td style="text-align:right">${x}</td><td>${q.F.length}</td><td>${q.c("غنی")}</td><td>${q.c("متوسط")}</td><td>${q.c("فقیر")}</td><td>${q.c("فقیرتر")}</td><td>${q.vc}/13</td></tr>`}).join("")}</table></div>`)+`${viewOnly()?`<div class="card muted">حالت مشاهده: فقط دیدن، جستجو، کاپی و خروجی گرفتن. ویرایش ممکن نیست.</div>`:`<div class="card"><b>پشتیبان‌گیری</b><p class="muted">معلومات روی همین دستگاه ذخیره می‌شود. قریه را بالا انتخاب کنید و پشتیبان همان قریه را بگیرید (فایل سبک‌تر)، بعد به Drive یا تلگرام بفرستید. دیگران همین فایل‌ها را در «حالت مشاهده‌گر» باز می‌کنند.</p><div class="bar"><button class="b o" onclick="makeViewer(flt.dash.v)">ساخت فایل مشاهده‌گر</button><button class="b" onclick="backup(flt.dash.v)">پشتیبان ${flt.dash.v?"این قریه":"همه قریه‌ها"}</button><label class="b o" style="cursor:pointer">بازیابی (یک یا چند فایل)<input type="file" accept=".json" id="rs" multiple style="display:none"></label></div></div>`}`}
+function printDash(){const v=flt.dash.v,s=stats(v);printHTML(`<h2>گزارش ${v||"مجموع ۱۰ قریه"} – افغان‌اید، فیض‌آباد، جوزجان</h2><table><tr><td>خانواده‌ها</td><td>${s.F.length}</td></tr><tr><td>افراد</td><td>${s.male+s.fem}</td></tr><tr><td>ذکور / اناث</td><td>${s.male} / ${s.fem}</td></tr><tr><td>سرپرست زن / مرد</td><td>${s.hw} / ${s.hm}</td></tr>${ECON.map(e=>`<tr><td>${e}</td><td>${s.c(e)} (${Math.round(s.c(e)/s.n*100)}٪)</td></tr>`).join("")}<tr><td>اعضای نمایندگان و کمیته‌ها</td><td>${s.R.length}</td></tr><tr><td>بازدید تکمیل‌شده</td><td>${s.vc}</td></tr></table>`)}
+function exportAll(){csv("village-report.csv",[["قریه","خانواده","افراد","ذکور","اناث","سرپرست زن","سرپرست مرد","غنی","متوسط","فقیر","فقیرتر","نمایندگان","بازدید تکمیل‌شده","عکس"],...VILLAGES.map(v=>{const s=stats(v);return[v,s.F.length,s.male+s.fem,s.male,s.fem,s.hw,s.hm,s.c("غنی"),s.c("متوسط"),s.c("فقیر"),s.c("فقیرتر"),s.R.length,s.vc,s.ph]})])}
+function backup(v){const o={v:2,seq:db.seq};COLS.forEach(c=>o[c]=db[c].filter(x=>!v||x.village===v));dl("afghanaid-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".json",new Blob([JSON.stringify(o)],{type:"application/json"}));localStorage.setItem("av_last",Date.now())}
+function makeViewer(v){const withId=confirm("عکس تذکره‌ها هم داخل فایل مشاهده گذاشته شود؟\nبرای امنیت بهتر است Cancel بزنید.");
+const o={seq:0};COLS.forEach(c=>o[c]=db[c].filter(x=>!v||x.village===v).map(x=>withId?x:{...x,idPhoto:undefined}));
+const c=document.documentElement.cloneNode(true);["#main","#nav","#print"].forEach(q=>c.querySelector(q).innerHTML="");c.querySelectorAll(".ov,.toast").forEach(e=>e.remove());
+const sc=document.createElement("script");sc.textContent="window.EMBED="+JSON.stringify(o).replace(/</g,"\\u003c")+";";c.querySelector("body").prepend(sc);
+dl("viewer-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".html",new Blob(["<!DOCTYPE html>\n"+c.outerHTML],{type:"text/html"}))}
+function banner(){if(viewOnly())return`<div class="card"><b>حالت مشاهده‌گر</b><br><span class="muted">فقط دیدن، جستجو، کاپی و خروجی Excel/PDF. ویرایش ممکن نیست.</span></div>`;
+if(!db.fam.length&&!db.rep.length&&!db.vis.length&&!db.arc.length)return`<div class="card"><b>خوش آمدید</b><p class="muted">اگر شما مدیر هستید، ثبت معلومات را شروع کنید. اگر فقط می‌خواهید معلومات را ببینید، از بالا «مشاهده‌گر» را انتخاب کنید و فایل پشتیبان را باز کنید.</p></div>`;
+const t=+localStorage.getItem("av_last")||0;return (Date.now()-t)/864e5>7?`<div class="card" style="border-color:var(--red)"><b style="color:var(--red)">${t?"بیش از ۷ روز پشتیبان نگرفته‌اید":"هنوز پشتیبان نگرفته‌اید"}</b> <button class="b" onclick="tab='dash';render()">رفتن به پشتیبان‌گیری</button></div>`:""}
+function pickView(){const i=document.createElement("input");i.type="file";i.accept=".json";i.multiple=true;
+ i.onchange=async()=>{try{const maps={};COLS.forEach(c=>maps[c]=new Map());for(const f of i.files){const d=JSON.parse(await f.text());if(!d.fam)throw 0;COLS.forEach(c=>(d[c]||[]).forEach(x=>maps[c].set(x.id,x)))}const nd={seq:0};COLS.forEach(c=>nd[c]=[...maps[c].values()]);db=nd;role="مشاهده‌گر";pend=[];render()}catch{toast("فایل پشتیبان درست نیست");$("#role").value=role}};
+ i.oncancel=()=>{$("#role").value=role};i.click()}
+
+/* رندر */
+const views={fam:viewFam,rep:viewRep,vis:viewVis,arc:viewArc,dash:viewDash};
+function render(){
+  $("#nav").innerHTML=TABS.map(([k,t])=>`<button class="${tab===k?"on":""}" onclick="tab='${k}';render()">${t}</button>`).join("");
+  $("#main").innerHTML=banner()+views[tab]();
+  const rs=$("#rs");if(rs)rs.onchange=async e=>{try{if(!confirm("معلومات فایل‌ها با معلومات فعلی ادغام می‌شود (موارد هم‌شماره تازه می‌شوند). ادامه می‌دهید؟"))return;for(const f of e.target.files){const d=JSON.parse(await f.text());if(!d.fam)throw 0;await mergeBackup(d)}render();toast("بازیابی شد")}catch{toast("فایل پشتیبان درست نیست")}}}
+document.addEventListener("change",e=>{const t=e.target;if(t.dataset.f){flt[t.dataset.f][t.dataset.g]=t.value;if(t.dataset.f==="fam")flt.fam.lim=50;render()}});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.g==="q"){flt[t.dataset.f].q=t.value;if(t.dataset.f==="fam")flt.fam.lim=50;const p=t.selectionStart;render();const n=document.querySelector('[data-g="q"]');n.focus();n.setSelectionRange(p,p)}});
+$("#role").innerHTML=Object.keys(ROLES).map(r=>`<option>${r}</option>`).join("");
+$("#role").onchange=async e=>{const r=e.target.value;if(r==="مشاهده‌گر")return pickView();role=r;await load();render()};
+if(window.EMBED){db=window.EMBED;COLS.forEach(c=>db[c]=db[c]||[]);role="مشاهده‌گر";$("#role").style.display="none";render()}
+else load().then(()=>{$("#role").value=role;render()});
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
