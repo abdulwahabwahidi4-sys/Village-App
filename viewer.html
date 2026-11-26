@@ -62,7 +62,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
-<footer class="muted" style="text-align:center;padding:12px">نسخه ۱۵ – مشاهده</footer>
+<footer class="muted" style="text-align:center;padding:12px">نسخه ۱۶ – مشاهده</footer>
 <div id="print"></div>
 
 <script>window.VIEWER=true;</script>
@@ -74,11 +74,11 @@ const REPTYPES=["فوکل پاینت کلیدی","فوکل پاینت مردان
 const ECON=["غنی","متوسط","فقیر","فقیرتر"];
 const VSTAT=["تکمیل‌شده","در جریان","تکمیل‌نشده"];
 // سطح دسترسی: ویرایش در کدام بخش‌ها
-const ROLES={"مدیر سیستم":{edit:["fam","rep","vis","arc","stat"],del:true},"مشاهده‌گر":{edit:[]}};
-const TABS=[["fam","خانواده‌ها"],["rep","نمایندگان و کمیته‌ها"],["vis","بازدیدها"],["arc","آرشیف پوستر و نقشه"],["stat","آمار قریه‌ها"],["dash","گزارش‌ها"]];
+const ROLES={"مدیر سیستم":{edit:["fam","rep","vis","arc","stat","note"],del:true},"مشاهده‌گر":{edit:[]}};
+const TABS=[["note","یادداشت روزمره"],["fam","خانواده‌ها"],["rep","نمایندگان و کمیته‌ها"],["vis","بازدیدها"],["arc","آرشیف پوستر و نقشه"],["stat","آمار قریه‌ها"],["dash","گزارش‌ها"]];
 
-let db={fam:[],rep:[],vis:[],arc:[],stats:[],seq:0};
-let role="مدیر سیستم",tab="dash",flt={fam:{v:"",q:"",e:""},rep:{v:"",t:""},vis:{v:""},arc:{v:"",t:""},dash:{v:""},stat:{v:""}};
+let db={fam:[],rep:[],vis:[],arc:[],stats:[],notes:[],seq:0};
+let role="مدیر سیستم",tab="dash",flt={fam:{v:"",q:"",e:""},rep:{v:"",t:""},vis:{v:""},arc:{v:"",t:""},dash:{v:""},stat:{v:""},note:{r:"month",q:""}};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
@@ -91,13 +91,13 @@ const famOf=r=>db.fam.find(x=>same(r,x));
 function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
 
 /* ذخیره‌سازی در IndexedDB (روی همین دستگاه) */
-const COLS=["fam","rep","vis","arc","stats"];
+const COLS=["fam","rep","vis","arc","stats","notes"];
 let pend=[];
 const touch=(c,r)=>{r._u=Date.now();pend.push({c,r})};
 let lastId=0;const newId=()=>{let i=Date.now()*1000+Math.floor(Math.random()*1000);if(i<=lastId)i=lastId+1;lastId=i;return i};
-const untouch=(c,id)=>{pend.push({c,id});if(localStorage.getItem("av_fb"))localStorage.setItem("av_tomb",JSON.stringify([...JSON.parse(localStorage.getItem("av_tomb")||"[]"),{c,id,u:Date.now()}]))};
+const untouch=(c,id)=>{pend.push({c,id});if(c!=="notes"&&localStorage.getItem("av_fb"))localStorage.setItem("av_tomb",JSON.stringify([...JSON.parse(localStorage.getItem("av_tomb")||"[]"),{c,id,u:Date.now()}]))};
 const viewOnly=()=>role==="مشاهده‌گر";
-const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open("afghanaid_view",3);
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open("afghanaid_view",4);
  r.onupgradeneeded=e=>{const d=r.result,tx=r.transaction;COLS.forEach(c=>{if(!d.objectStoreNames.contains(c))d.createObjectStore(c,{keyPath:"id"})});if(!d.objectStoreNames.contains("kv"))d.createObjectStore("kv");
   if(e.oldVersion===1){tx.objectStore("kv").get("db").onsuccess=ev=>{const o=ev.target.result;if(o){COLS.forEach(c=>(o[c]||[]).forEach(x=>tx.objectStore(c).put(x)));tx.objectStore("kv").put(o.seq||0,"seq")}}}};
  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
@@ -220,9 +220,9 @@ function viewDash(){const v=flt.dash.v,s=stats(v);const card=(t,n)=>`<div class=
   ${repTable(v)}`+(v?"":`<div class="card"><b>مقایسه قریه‌ها</b><table style="width:100%;border-collapse:collapse;font-size:14px"><tr><th>قریه</th><th>خانواده</th><th>غنی</th><th>متوسط</th><th>فقیر</th><th>فقیرتر</th><th>بازدید</th></tr>${VILLAGES.map(x=>{const q=stats(x);return`<tr style="border-top:1px solid var(--line);text-align:center"><td style="text-align:right">${x}</td><td>${q.F.length}</td><td>${q.c("غنی")}</td><td>${q.c("متوسط")}</td><td>${q.c("فقیر")}</td><td>${q.c("فقیرتر")}</td><td>${q.vc}/13</td></tr>`}).join("")}</table></div>`)+`${viewOnly()?`<div class="card muted">حالت مشاهده: فقط دیدن، جستجو، کاپی و خروجی گرفتن. ویرایش ممکن نیست.</div>`:`<div class="card"><b>پشتیبان‌گیری</b><p class="muted">معلومات روی همین دستگاه ذخیره می‌شود. قریه را بالا انتخاب کنید و پشتیبان همان قریه را بگیرید (فایل سبک‌تر)، بعد به Drive یا تلگرام بفرستید. دیگران همین فایل‌ها را در «حالت مشاهده‌گر» باز می‌کنند.</p><div class="bar"><button class="b o" onclick="makeViewer(flt.dash.v)">ساخت فایل مشاهده‌گر</button><button class="b" onclick="backup(flt.dash.v)">پشتیبان ${flt.dash.v?"این قریه":"همه قریه‌ها"}</button><button class="b o" onclick="fbSetup()">${FB.cfg&&FB.cfg.refresh?"تنظیم اتصال آنلاین":"اتصال آنلاین"}</button>${FB.cfg&&FB.cfg.refresh?`<button class="b d" onclick="fbOff()">قطع اتصال</button>`:""}<button class="b o" onclick="backupView(flt.dash.v)">فایل برای مشاهده‌گر (بدون عکس تذکره)</button><label class="b o" style="cursor:pointer">بازیابی (یک یا چند فایل)<input type="file" accept=".json" id="rs" multiple style="display:none"></label></div></div>`}`}
 function printDash(){const v=flt.dash.v,s=stats(v);printHTML(`<h2>گزارش ${v||"مجموع ۱۰ قریه"} – افغان‌اید، فیض‌آباد، جوزجان</h2><table><tr><td>خانواده‌ها</td><td>${s.F.length}</td></tr><tr><td>افراد</td><td>${s.male+s.fem}</td></tr><tr><td>ذکور / اناث</td><td>${s.male} / ${s.fem}</td></tr><tr><td>سرپرست زن / مرد</td><td>${s.hw} / ${s.hm}</td></tr>${ECON.map(e=>`<tr><td>${e}</td><td>${s.c(e)} (${Math.round(s.c(e)/s.n*100)}٪)</td></tr>`).join("")}<tr><td>اعضای نمایندگان و کمیته‌ها</td><td>${s.R.length}</td></tr><tr><td>بازدید تکمیل‌شده</td><td>${s.vc}</td></tr></table>${mahalaCard(v)}${repTable(v)}`)}
 function exportAll(){csv("village-report.csv",[["قریه","خانواده","افراد","ذکور","اناث","سرپرست زن","سرپرست مرد","غنی","متوسط","فقیر","فقیرتر","نمایندگان","بازدید تکمیل‌شده","عکس","کارگری","۱۰۰ دالر","۲۳۰ دالر"],...VILLAGES.map(v=>{const s=stats(v);return[v,s.F.length,s.male+s.fem,s.male,s.fem,s.hw,s.hm,s.c("غنی"),s.c("متوسط"),s.c("فقیر"),s.c("فقیرتر"),s.R.length,s.vc,s.ph,s.c("فقیر"),db.fam.filter(x=>x.village===v&&x.h100).length,db.fam.filter(x=>x.village===v).reduce((a,x)=>a+(x.h230?1:0)+(x.w230?1:0)+(x.d230?1:0),0)]})])}
-function backup(v){const o={v:2,seq:db.seq};COLS.forEach(c=>o[c]=db[c].filter(x=>!v||x.village===v));dl("afghanaid-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".json",new Blob([JSON.stringify(o)],{type:"application/json"}));localStorage.setItem("av_last",Date.now())}
+function backup(v){const o={v:2,seq:db.seq};COLS.forEach(c=>o[c]=c==="notes"?db[c]:db[c].filter(x=>!v||x.village===v));dl("afghanaid-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".json",new Blob([JSON.stringify(o)],{type:"application/json"}));localStorage.setItem("av_last",Date.now())}
 function makeViewer(v){const withId=confirm("عکس تذکره‌ها هم داخل فایل مشاهده گذاشته شود؟\nبرای امنیت بهتر است Cancel بزنید.");
-const o={seq:0};COLS.forEach(c=>o[c]=db[c].filter(x=>!v||x.village===v).map(x=>withId?x:{...x,idPhoto:undefined}));
+const o={seq:0};COLS.forEach(c=>o[c]=c==="notes"?[]:db[c].filter(x=>!v||x.village===v).map(x=>withId?x:{...x,idPhoto:undefined}));
 const c=document.documentElement.cloneNode(true);["#main","#nav","#print"].forEach(q=>c.querySelector(q).innerHTML="");c.querySelectorAll(".ov,.toast").forEach(e=>e.remove());
 const sc=document.createElement("script");sc.textContent="window.EMBED="+JSON.stringify(o).replace(/</g,"\\u003c")+";";c.querySelector("body").prepend(sc);
 dl("viewer-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".html",new Blob(["<!DOCTYPE html>\n"+c.outerHTML],{type:"text/html"}))}
@@ -265,7 +265,7 @@ function viewStat(){const v=flt.stat.v||VILLAGES[0];flt.stat.v=v;const groups=ne
  return h+`<div class="card"><b>فقیر و فقیرتر (تک‌تک ثبت می‌شود)</b><div class="muted">فقیر: ${db.fam.filter(x=>x.econ==="فقیر"&&x.village===v).length} • فقیرتر: ${db.fam.filter(x=>x.econ==="فقیرتر"&&x.village===v).length} خانواده ثبت شده در این قریه</div></div>`}
 function exportStats(){csv("village-stats.csv",[["قریه","محله","وضعیت","خانواده","سرپرست مرد","سرپرست زن","ذکور","اناث","تاریخ"],...db.stats.map(x=>[x.village,x.mahala,x.cat,x.families,x.headM,x.headF,x.males,x.females,x.date])])}
 async function saveSnapshot(nd){try{const d=await idb();const tx=d.transaction([...COLS],"readwrite");COLS.forEach(c=>{const st=tx.objectStore(c);st.clear();(nd[c]||[]).forEach(x=>st.put(x))});await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)})}catch(e){toast("ذخیره معلومات در این دستگاه ناکام شد")}}
-function backupView(v){const o={v:2,seq:db.seq};COLS.forEach(c=>o[c]=db[c].filter(x=>!v||x.village===v).map(x=>({...x,idPhoto:undefined})));dl("view-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".json",new Blob([JSON.stringify(o)],{type:"application/json"}))}
+function backupView(v){const o={v:2,seq:db.seq};COLS.forEach(c=>o[c]=c==="notes"?[]:db[c].filter(x=>!v||x.village===v).map(x=>({...x,idPhoto:undefined})));dl("view-"+(v?v.replace(/\s/g,"_"):"all")+"-"+today()+".json",new Blob([JSON.stringify(o)],{type:"application/json"}))}
 /* ===== همگام‌سازی آنلاین (Firestore REST، فقط معلومات متنی) ===== */
 const FB={get cfg(){try{return JSON.parse(localStorage.getItem("av_fb")||"null")}catch{return null}},set cfg(v){localStorage.setItem("av_fb",JSON.stringify(v))}};
 let tok=null,tokExp=0,syncing=false,needRender=false,syncMsg="";
@@ -278,7 +278,7 @@ const fsRoot=()=>"projects/"+FB.cfg.projectId+"/databases/(default)/documents";
 async function fsCall(path,body){const t=await fbToken();const r=await fetch("https://firestore.googleapis.com/v1/"+fsRoot()+path,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify(body)});if(!r.ok){const e=await r.text();throw new Error(r.status+" "+e.slice(0,100))}return r.json()}
 const stripP=r=>{const o={...r};delete o.idPhoto;delete o.photos;delete o.files;delete o._s;delete o._u;return o};
 const wr=(c,id,u,del,d)=>({update:{name:fsRoot()+"/r/"+c+"_"+id,fields:{c:{stringValue:c},d:{stringValue:d},u:{integerValue:String(u)},del:{booleanValue:del}}}});
-async function syncPush(){const items=[];for(const c of COLS)for(const r of db[c]){if(r._s===undefined||(r._u||0)>(r._s||0)){if(!r._u)r._u=Date.now();items.push({c,r})}}
+async function syncPush(){const items=[];for(const c of COLS.filter(k=>k!=="notes"))for(const r of db[c]){if(r._s===undefined||(r._u||0)>(r._s||0)){if(!r._u)r._u=Date.now();items.push({c,r})}}
  const part=items.slice(0,150),T=tombs().slice(0,150-part.length);const writes=[...part.map(({c,r})=>wr(c,r.id,r._u,false,JSON.stringify(stripP(r)))),...T.map(t=>wr(t.c,t.id,t.u,true,"{}"))];
  if(!writes.length)return 0;await fsCall(":commit",{writes});part.forEach(({c,r})=>{r._s=r._u;pend.push({c,r})});if(T.length)setTombs(tombs().filter(x=>!T.some(t=>t.c===x.c&&t.id===x.id)));await save();return writes.length}
 async function syncPull(){let ch=0,since=+localStorage.getItem("av_pull")||0;
@@ -328,15 +328,16 @@ const M_FAM=mk([["قریه","village"],["محله","mahala"],["وضعیت","econ
 const M_STAT=mk([["قریه","village"],["محله","mahala"],["وضعیت","cat"],["تعداد سرپرست مرد","headM"],["تعداد سرپرست زن","headF"],["تعداد ذکور","males"],["ذکور","males"],["تعداد اناث","females"],["اناث","females"]]);
 const M_REP=mk([["بخش","type"],["وظیفه","type"],["قریه","village"],["اسم","name"],["ولد","father"],["محله","mahala"],["شماره تماس","phone"],["تماس","phone"],["نمبر تذکره","idNo"],["تذکره","idNo"],["جنسیت","gender"],["سن","age"],["شغل","job"]]);
 const M_VIS=mk([["قریه","village"],["شماره بازدید","no"],["عنوان بازدید","title"],["تاریخ بازدید","date"],["تاریخ","date"],["وضعیت بازدید","status"],["وضعیت","status"],["متن گزارش بازدید","report"],["متن گزارش","report"],["فعالیت‌های انجام‌شده","acts"],["مشکلات و چالش‌ها","probs"],["پیشنهادات","sugg"]]);
+const M_NOTE=mk([["تاریخ","date"],["قریه","village"],["جای","place"],["محل","place"],["کجا","place"],["فعالیت","activity"],["کار","activity"]]);
 const M_ARC=mk([["قریه","village"],["نوع پوستر یا نقشه","type"],["نوع","type"],["تاریخ آپلود","date"],["تاریخ","date"],["توضیحات","note"]]);
 const TRUEV=["بلی","بله","✓","✔","1","x","yes","true","درست"].map(nz);
 const num=v=>{const s=nz(v);if(s==="")return 0;const n=+s;return Number.isFinite(n)&&n>=0?Math.round(n):null};
-const toDate=v=>{let s=nz(v);if(!s)return"";if(/^\d{5}(\.\d+)?$/.test(s)){return new Date(Date.UTC(1899,11,30)+Math.floor(+s)*864e5).toISOString().slice(0,10)}const m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);return m?m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0"):null};
+const toDate=v=>{let s=nz(v);if(!s)return"";if(/^\d{5}(\.\d+)?$/.test(s)){return new Date(Date.UTC(1899,11,30)+Math.floor(+s)*864e5).toISOString().slice(0,10)}const m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(!m)return null;let y=+m[1],mo=+m[2],d=+m[3];if(mo<1||mo>12||d<1||d>(y<1700?(mo<=6?31:30):31))return null;if(y<1700){const g=j2g(y,mo,d);y=g[0];mo=g[1];d=g[2]}const dt=new Date(Date.UTC(y,mo-1,d));if(dt.getUTCMonth()!==mo-1||dt.getUTCDate()!==d)return null;return isoOf(y,mo,d)};
 const mapHdr=(rows,map)=>{const hi=rows.findIndex((r,i)=>i<6&&(r.a||[]).filter(h=>map[nz(h)]).length>=2);if(hi<0)return null;return{hdr:(rows[hi].a||[]).map(h=>map[nz(h)]||null),data:rows.slice(hi+1)}};
 const rowObj=(hdr,row)=>{const o={};hdr.forEach((k,i)=>{if(k)o[k]=row.a[i]==null?"":String(row.a[i]).trim()});return o};
 const emptyObj=o=>!Object.values(o).some(v=>v!=="");
 const vmapAll=()=>new Map(VILLAGES.map(v=>[nz(v),v]));
-function sheetKind(name,rows){const n=nz(name);if(/^lists$/i.test(name)||n.includes("راهنما"))return null;if(n.includes("آمار"))return"stat";if(n.includes("نمایندگ")||n.includes("کمیته"))return"rep";if(n.includes("بازدید"))return"vis";if(n.includes("آرشیف")||n.includes("پوستر"))return"arc";if(n.includes("خانواده"))return"fam";
+function sheetKind(name,rows){const n=nz(name);if(/^lists$/i.test(name)||n.includes("راهنما"))return null;if(n.includes("یادداشت"))return"note";if(n.includes("آمار"))return"stat";if(n.includes("نمایندگ")||n.includes("کمیته"))return"rep";if(n.includes("بازدید"))return"vis";if(n.includes("آرشیف")||n.includes("پوستر"))return"arc";if(n.includes("خانواده"))return"fam";
  const hs=rows.slice(0,6).flatMap(r=>(r.a||[]).map(h=>nz(h)));const has=k=>hs.includes(nz(k));if(has("شماره بازدید")||has("عنوان بازدید"))return"vis";if(has("بخش")&&has("اسم"))return"rep";if(has("وضعیت")&&has("اسم"))return"fam";return null}
 function parseFam(rows){const R={ok:[],bad:[],skip:0},m=mapHdr(rows,M_FAM);if(!m||!m.hdr.includes("name")||!m.hdr.includes("village")){R.err="سربرگ ستون‌ها درست نیست (قریه و اسم لازم است)";return R}
  const vm=vmapAll(),seen=new Set(db.fam.filter(x=>x.idNo).map(x=>nz(x.idNo)));
@@ -375,10 +376,10 @@ function parseArc(rows){const R={ok:[],bad:[]},m=mapHdr(rows,M_ARC);if(!m||!m.hd
  const vm=vmapAll(),pm=new Map(POSTERS.map(p=>[nz(p),p]));
  m.data.forEach(row=>{const o=rowObj(m.hdr,row);if(emptyObj(o))return;const err=[],v=vm.get(nz(o.village)),t=pm.get(nz(o.type));if(!v)err.push("قریه درست نیست");if(!t)err.push("نوع از فهرست نیست");const d=toDate(o.date);if(d===null)err.push("تاریخ درست نیست");
   if(err.length){R.bad.push({n:row.n,e:err.join("، "),name:o.type});return}R.ok.push({village:v,type:t,date:d||today(),note:o.note||""})});return R}
-const KLAB={fam:"خانواده‌ها (فقیر و فقیرتر)",stat:"آمار غنی و متوسط",rep:"نمایندگان و کمیته‌ها",vis:"بازدیدها",arc:"آرشیف پوستر و نقشه"};
+const KLAB={note:"یادداشت روزمره",fam:"خانواده‌ها (فقیر و فقیرتر)",stat:"آمار غنی و متوسط",rep:"نمایندگان و کمیته‌ها",vis:"بازدیدها",arc:"آرشیف پوستر و نقشه"};
 async function importFile(file){if(!file)return;if(!can("fam"))return toast("فقط مدیر می‌تواند وارد کند");
  try{const sheets=/\.csv$/i.test(file.name)?[{name:"csv",rows:readCsv(await file.text())}]:await readXlsx(await file.arrayBuffer());
-  const P={fam:parseFam,stat:parseStat,rep:parseRep,vis:parseVis,arc:parseArc},R={};
+  const P={fam:parseFam,stat:parseStat,rep:parseRep,vis:parseVis,arc:parseArc,note:parseNote},R={};
   sheets.forEach(s=>{const k=sheetKind(s.name,s.rows);if(k&&!R[k])R[k]=P[k](s.rows)});
   if(!Object.keys(R).length)return toast("هیچ برگه‌ای شناخته نشد. از قالب آماده استفاده کنید.");
   showImport(R)}catch(e){console.log(e);toast("فایل خوانده نشد. فایل .xlsx یا .csv را انتخاب کنید.")}}
@@ -387,13 +388,44 @@ function applyImport(R){const d=today();let n=0;
  (R.stat?R.stat.ok:[]).forEach(o=>{const ex=db.stats.find(s=>s.village===o.village&&norm(s.mahala)===norm(o.mahala)&&s.cat===o.cat);if(ex){Object.assign(ex,o,{date:d});touch("stats",ex)}else{const r={...o,id:newId(),date:d};db.stats.push(r);touch("stats",r)}n++});
  (R.rep?R.rep.ok:[]).forEach(o=>{const r={...o,id:newId(),created:d};db.rep.push(r);touch("rep",r);n++});
  (R.vis?R.vis.ok:[]).forEach(o=>{const ex=db.vis.find(s=>s.village===o.village&&s.no===o.no);if(ex){Object.assign(ex,o,{upd:d});touch("vis",ex)}else{const r={...o,id:newId(),upd:d,photos:[]};db.vis.push(r);touch("vis",r)}n++});
+ (R.note?R.note.ok:[]).forEach(o=>{const r={...o,id:newId(),created:d,upd:d};db.notes.push(r);touch("notes",r);n++});
  (R.arc?R.arc.ok:[]).forEach(o=>{const r={...o,id:newId(),files:[]};db.arc.push(r);touch("arc",r);n++});return n}
 function showImport(R){const ov=document.createElement("div");ov.className="ov";let total=0,errs=[];
  const lines=Object.keys(R).map(k=>{const r=R[k];total+=r.ok.length;if(r.err)errs.push(KLAB[k]+": "+r.err);r.bad.forEach(b=>errs.push(KLAB[k]+" – ردیف "+b.n+(b.name?" ("+esc(b.name)+")":"")+": "+esc(b.e)));return`<div class="row" style="padding:4px 0"><span>${KLAB[k]}</span><span><b>${r.ok.length}</b> آماده • <span style="color:var(--red)">${r.bad.length+(r.err?1:0)}</span> مشکل${r.skip?" • "+r.skip+" غنی/متوسط نادیده":""}</span></div>`}).join("");
  ov.innerHTML=`<div class="md"><h2 style="margin-top:0">وارد کردن از Excel</h2><div class="card">${lines}</div>${errs.length?`<div class="card" style="max-height:220px;overflow:auto;font-size:14px">${errs.slice(0,60).join("<br>")}${errs.length>60?"<br>…":""}</div>`:""}<p class="muted">ردیف‌های مشکل‌دار وارد نمی‌شود. آمار محله‌ها، بازدیدها و آرشیف اگر قبلاً ثبت باشد، تازه می‌شود.</p><div class="row" style="margin-top:12px">${total?`<button class="b" id="go">وارد کن (${total})</button>`:"<span></span>"}<button class="b o" id="no">لغو</button></div></div>`;
  document.body.appendChild(ov);ov.querySelector("#no").onclick=()=>ov.remove();const go=ov.querySelector("#go");
  if(go)go.onclick=async()=>{go.disabled=true;const n=applyImport(R);await save();ov.remove();render();toast(n+" مورد وارد شد")}}
-function banner(){if(window.VIEWER){const n=db.fam.length+db.rep.length+db.vis.length;const d=localStorage.getItem("av_viewdate");return`<div class="card"><b>برنامه مشاهده</b><br><span class="muted">${n?"آخرین به‌روزرسانی معلومات: "+(d||"-"):"هنوز معلومات بارگذاری نشده است."}</span><div style="margin-top:8px"><button class="b" onclick="pickView()">بارگذاری / به‌روزرسانی معلومات از فایل</button></div></div>`}
+/* ===== یادداشت روزمره ===== */
+const SMON=["حمل","ثور","جوزا","سرطان","اسد","سنبله","میزان","عقرب","قوس","جدی","دلو","حوت"];
+const WDAY=["یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"];
+function g2j(gy,gm,gd){const gdm=[0,31,59,90,120,151,181,212,243,273,304,334];let jy=gy<=1600?0:979;gy-=gy<=1600?621:1600;const gy2=gm>2?gy+1:gy;let days=365*gy+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)-80+gd+gdm[gm-1];jy+=33*Math.floor(days/12053);days%=12053;jy+=4*Math.floor(days/1461);days%=1461;if(days>365){jy+=Math.floor((days-1)/365);days=(days-1)%365}const jm=days<186?1+Math.floor(days/31):7+Math.floor((days-186)/30);const jd=1+(days<186?days%31:(days-186)%30);return[jy,jm,jd]}
+function j2g(jy,jm,jd){let gy=jy>979?1600:621;jy-=jy>979?979:0;let days=365*jy+Math.floor(jy/33)*8+Math.floor((jy%33+3)/4)+78+jd+(jm<7?(jm-1)*31:(jm-7)*30+186);gy+=400*Math.floor(days/146097);days%=146097;if(days>36524){days--;gy+=100*Math.floor(days/36524);days%=36524;if(days>=365)days++}gy+=4*Math.floor(days/1461);days%=1461;if(days>365){gy+=Math.floor((days-1)/365);days=(days-1)%365}let gd=days+1;const sa=[0,31,(gy%4===0&&gy%100!==0)||gy%400===0?29:28,31,30,31,30,31,31,30,31,30,31];let gm=0;for(gm=0;gm<13&&gd>sa[gm];gm++)gd-=sa[gm];return[gy,gm,gd]}
+const isoOf=(y,m,d)=>y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+const shamsiTxt=iso=>{const p=iso.split("-").map(Number),j=g2j(p[0],p[1],p[2]);return j[0]+"/"+String(j[1]).padStart(2,"0")+"/"+String(j[2]).padStart(2,"0")};
+const fmtDay=iso=>{const p=iso.split("-").map(Number),j=g2j(p[0],p[1],p[2]);return WDAY[new Date(Date.UTC(p[0],p[1]-1,p[2])).getUTCDay()]+" "+j[2]+" "+SMON[j[1]-1]+" "+j[0]};
+function notesFiltered(){const f=flt.note,rng=f.r||"month",t0=today(),tp=t0.split("-").map(Number),tj=g2j(tp[0],tp[1],tp[2]);
+ const inR=n=>{if(rng==="all")return true;if(rng==="today")return n.date===t0;if(rng==="30")return n.date<=t0&&(Date.parse(t0)-Date.parse(n.date))<=30*864e5;const p=n.date.split("-").map(Number),j=g2j(p[0],p[1],p[2]);return j[0]===tj[0]&&j[1]===tj[1]};
+ return db.notes.filter(n=>inR(n)&&(!f.q||[n.place,n.activity,n.village].join(" ").includes(f.q))).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id)}
+function editNote(id,pre){const x=id?db.notes.find(n=>n.id===id):null;const iso=x?x.date:((pre&&pre.date)||today());
+ form(x?"ویرایش یادداشت":"یادداشت روزمره جدید",[{k:"dateTxt",l:"تاریخ (شمسی مثل 1405/08/30 یا میلادی)",req:1},{k:"village",l:"قریه (اختیاری)",t:"select",o:VILLAGES},{k:"place",l:"کجا رفتید؟"},{k:"activity",l:"چه کاری کردید؟",t:"area",req:1}],x?{...x,dateTxt:shamsiTxt(x.date)}:{dateTxt:shamsiTxt(iso),village:(pre&&pre.village)||""},t=>{
+  const d=toDate(t.dateTxt);if(!d)return"تاریخ درست نیست (مثلاً 1405/08/30)";
+  const rec={date:d,village:t.village||"",place:t.place||"",activity:t.activity,upd:today()};let r=x;if(x)Object.assign(x,rec);else{r={...rec,id:newId(),created:today()};db.notes.push(r)}touch("notes",r)},x?null:{again:t=>editNote(0,{date:toDate(t.dateTxt)||iso,village:t.village})})}
+function viewNote(){const f=flt.note,rng=f.r||"month",tp=today().split("-").map(Number),tj=g2j(tp[0],tp[1],tp[2]);const l=notesFiltered();
+ let h=`<div class="bar"><select data-f="note" data-g="r"><option value="today" ${rng==="today"?"selected":""}>امروز</option><option value="30" ${rng==="30"?"selected":""}>۳۰ روز اخیر</option><option value="month" ${rng==="month"?"selected":""}>این ماه (${SMON[tj[1]-1]})</option><option value="all" ${rng==="all"?"selected":""}>همه</option></select><input data-f="note" data-g="q" placeholder="جستجو در یادداشت‌ها" value="${esc(f.q||"")}">${can("note")?`<button class="b" onclick="editNote(0)">+ یادداشت جدید</button>`:""}<button class="b o" onclick="exportNotes()">Excel</button><button class="b o" onclick="printNotes()">چاپ / PDF</button></div><p class="muted">${l.length} یادداشت • برای روزهای گذشته، هنگام نوشتن تاریخ را عوض کنید</p>`;
+ let last="";l.forEach(n=>{if(n.date!==last){last=n.date;h+=`<div style="margin:14px 0 6px;font-weight:700;color:var(--teal)">${fmtDay(n.date)} <span class="muted">(${n.date})</span></div>`}
+  h+=`<div class="card"><div class="row"><b>${esc(n.place||"—")}</b><span>${n.village?`<span class="tag">${n.village}</span>`:""}</span></div><div style="white-space:pre-wrap;margin-top:4px">${esc(n.activity)}</div><div class="row" style="margin-top:6px"><span></span><span>${can("note")?`<button class="b o" onclick="editNote(${n.id})">ویرایش</button> `:""}${ROLES[role].del?`<button class="b d" onclick="del('notes',${n.id})">حذف</button>`:""}</span></div></div>`});
+ return h+(l.length?"":`<div class="card muted">یادداشتی برای این بازه نیست. «+ یادداشت جدید» را بزنید.</div>`)}
+function exportNotes(){csv("daily-notes.csv",[["تاریخ شمسی","تاریخ میلادی","قریه","جای","فعالیت"],...[...db.notes].sort((a,b)=>a.date.localeCompare(b.date)).map(n=>[shamsiTxt(n.date),n.date,n.village,n.place,n.activity])])}
+function printNotes(){const l=notesFiltered().reverse();printHTML(`<h2>یادداشت روزمره</h2><table><tr><th>تاریخ</th><th>قریه</th><th>جای</th><th>فعالیت</th></tr>${l.map(n=>`<tr><td>${fmtDay(n.date)}<br>${n.date}</td><td>${esc(n.village)}</td><td>${esc(n.place)}</td><td>${esc(n.activity)}</td></tr>`).join("")}</table>`)}
+const noteBanner=()=>{if(viewOnly()||window.VIEWER||window.EMBED||db.notes.some(n=>n.date===today()))return"";return`<div class="card" style="border-color:var(--ochre)"><b>یادداشت امروز را هنوز ننوشته‌اید</b> <button class="b" onclick="editNote(0)">نوشتن یادداشت</button></div>`};
+function parseNote(rows){const R={ok:[],bad:[]},m=mapHdr(rows,M_NOTE);if(!m||!m.hdr.includes("activity")){R.err="سربرگ ستون‌ها درست نیست (تاریخ، فعالیت)";return R}
+ const vm=vmapAll(),seen=new Set(db.notes.map(n=>n.date+"|"+nz(n.place)+"|"+nz(n.activity)));
+ m.data.forEach(row=>{const o=rowObj(m.hdr,row);if(emptyObj(o))return;const err=[],d=toDate(o.date);if(!d)err.push("تاریخ درست نیست (مثلاً 1405/08/30)");if(!o.activity)err.push("فعالیت خالی است");
+  let v="";if(o.village){v=vm.get(nz(o.village))||"";if(!v)err.push("قریه درست نیست")}
+  const k=d+"|"+nz(o.place)+"|"+nz(o.activity);if(!err.length&&seen.has(k))err.push("تکراری است");
+  if(err.length){R.bad.push({n:row.n,e:err.join("، "),name:(o.activity||"").slice(0,20)});return}seen.add(k);R.ok.push({date:d,village:v,place:o.place||"",activity:o.activity})});return R}
+function banner(){return noteBanner()+banner0()}
+function banner0(){if(window.VIEWER){const n=db.fam.length+db.rep.length+db.vis.length;const d=localStorage.getItem("av_viewdate");return`<div class="card"><b>برنامه مشاهده</b><br><span class="muted">${n?"آخرین به‌روزرسانی معلومات: "+(d||"-"):"هنوز معلومات بارگذاری نشده است."}</span><div style="margin-top:8px"><button class="b" onclick="pickView()">بارگذاری / به‌روزرسانی معلومات از فایل</button></div></div>`}
 if(viewOnly())return`<div class="card"><b>حالت مشاهده‌گر</b><br><span class="muted">فقط دیدن، جستجو، کاپی و خروجی Excel/PDF. ویرایش ممکن نیست.</span></div>`;
 if(!db.fam.length&&!db.rep.length&&!db.vis.length&&!db.arc.length)return`<div class="card"><b>خوش آمدید</b><p class="muted">اگر شما مدیر هستید، ثبت معلومات را شروع کنید. اگر فقط می‌خواهید معلومات را ببینید، از بالا «مشاهده‌گر» را انتخاب کنید و فایل پشتیبان را باز کنید.</p></div>`;
 const t=+localStorage.getItem("av_last")||0;return (Date.now()-t)/864e5>7?`<div class="card" style="border-color:var(--red)"><b style="color:var(--red)">${t?"بیش از ۷ روز پشتیبان نگرفته‌اید":"هنوز پشتیبان نگرفته‌اید"}</b> <button class="b" onclick="tab='dash';render()">رفتن به پشتیبان‌گیری</button></div>`:""}
@@ -402,9 +434,9 @@ function pickView(){const i=document.createElement("input");i.type="file";i.acce
  i.oncancel=()=>{$("#role").value=role};i.click()}
 
 /* رندر */
-const views={stat:viewStat,fam:viewFam,rep:viewRep,vis:viewVis,arc:viewArc,dash:viewDash};
+const views={note:viewNote,stat:viewStat,fam:viewFam,rep:viewRep,vis:viewVis,arc:viewArc,dash:viewDash};
 function render(){
-  $("#nav").innerHTML=TABS.map(([k,t])=>`<button class="${tab===k?"on":""}" onclick="tab='${k}';render()">${t}</button>`).join("");
+  $("#nav").innerHTML=TABS.filter(([k])=>k!=="note"||!(viewOnly()||window.VIEWER||window.EMBED)).map(([k,t])=>`<button class="${tab===k?"on":""}" onclick="tab='${k}';render()">${t}</button>`).join("");
   $("#main").innerHTML=banner()+views[tab]();
   const rs=$("#rs");if(rs)rs.onchange=async e=>{try{if(!confirm("معلومات فایل‌ها با معلومات فعلی ادغام می‌شود (موارد هم‌شماره تازه می‌شوند). ادامه می‌دهید؟"))return;for(const f of e.target.files){const d=JSON.parse(await f.text());if(!d.fam)throw 0;await mergeBackup(d)}render();toast("بازیابی شد")}catch{toast("فایل پشتیبان درست نیست")}}}
 document.addEventListener("change",e=>{const t=e.target;if(t.dataset.f){flt[t.dataset.f][t.dataset.g]=t.value;if(t.dataset.f==="fam")flt.fam.lim=50;render()}});
